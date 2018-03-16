@@ -10,6 +10,7 @@
     tools:context="mg.studio.weatherappdesign.MainActivity">
 
     <TextView
+        android:id="@+id/tv_week"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="10dp"
@@ -133,6 +134,17 @@
                     android:textColor="@android:color/white"
                     android:textSize="22sp" />
 
+                <Button
+                    android:id="@+id/btn_flush"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignBaseline="@+id/temperature_of_the_day"
+                    android:layout_alignBottom="@+id/temperature_of_the_day"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:background="@android:drawable/ic_popup_sync"
+                    android:onClick="btnClick_flush" />
+
 
             </RelativeLayout>
 
@@ -176,8 +188,9 @@
                 app:srcCompat="@drawable/rainy_small" />
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/button_shape"
                 android:gravity="center"
                 android:text="mon"
                 android:textAllCaps="true"
@@ -197,8 +210,8 @@
                 app:srcCompat="@drawable/partly_sunny_small" />
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:gravity="center"
                 android:text="tue"
                 android:textAllCaps="true"
@@ -218,8 +231,8 @@
                 app:srcCompat="@drawable/windy_small" />
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:gravity="center"
                 android:text="thu"
                 android:textAllCaps="true"
@@ -239,8 +252,8 @@
                 app:srcCompat="@drawable/sunny_small" />
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:gravity="center"
                 android:text="fri"
                 android:textAllCaps="true"
