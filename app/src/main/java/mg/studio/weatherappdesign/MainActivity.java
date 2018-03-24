@@ -1,22 +1,25 @@
 package mg.studio.weatherappdesign;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Xml;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import java.io.BufferedReader;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.TimeZone;
 
 
@@ -27,8 +30,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
+    public  void CheckNet(){
+        Context context = this.getApplicationContext();
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo network = connectivityManager.getActiveNetworkInfo();
+        if(network == null){
+            Toast.makeText(MainActivity.this,"网络连接不可用",Toast.LENGTH_LONG).show();}}
 
     public void btnClick(View view) {
+        CheckNet();
         new DownloadUpdate().execute();
     }
 
@@ -67,49 +78,62 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... strings) {
-            String stringUrl = "http://mpianatra.com/Courses/info.txt";
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader;
 
+            String buffer = "";
+            String low = "";
+            String high = "";
             try {
-                URL url = new URL(stringUrl);
-
-                // Create the request to get the information from the server, and open the connection
-                urlConnection = (HttpURLConnection) url.openConnection();
-
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                // Read the input stream into a String
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-                if (inputStream == null) {
-                    // Nothing to do.
-                    return null;
+                URL url=new URL("http://wthrcdn.etouch.cn/WeatherApi?citykey=101040100");
+                HttpURLConnection connection= (HttpURLConnection) url.openConnection();
+                //设置请求方式
+                connection.setRequestMethod("GET");
+                //设置连接超时的时间（优化）
+                connection.setConnectTimeout(5000);
+                //结果码（状态）//成功200   失败 未修改304
+                //获取结果码
+                int code=connection.getResponseCode();
+                if(code==200){
+                    InputStream is=connection.getInputStream();
+                    //使用PULL解析
+                    XmlPullParser xmlPullParser= Xml.newPullParser();
+                    xmlPullParser.setInput(is,"UTF-8");
+                    //获取解析的标签的类型
+                    int type=xmlPullParser.getEventType();
+                    while(type!=XmlPullParser.END_DOCUMENT){
+                        switch (type) {
+                            case XmlPullParser.START_TAG:
+                                //获取开始标签的名字
+                                String starttgname = xmlPullParser.getName();
+                                if ("date".equals(starttgname)) {
+                                    String date = xmlPullParser.nextText();
+                                }
+                                if ("high".equals(starttgname)) {
+                                    //获取high的值
+                                    high = xmlPullParser.nextText();
+                                    high = high.substring(3,5);
+                                } else if ("low".equals(starttgname)) {
+                                    //获取low的值
+                                    low = xmlPullParser.nextText();
+                                    low = low.substring(3,5);
+                                }
+                                break;
+                            case XmlPullParser.END_TAG:
+                                break;
+                        }
+                        buffer = low + "-" + high;
+                        type=xmlPullParser.next();
+                    }
+                    //返回温度
+                    return buffer;
                 }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    // Mainly needed for debugging
-                    buffer.append(line + "\n");
-                }
-
-                if (buffer.length() == 0) {
-                    // Stream was empty.  No point in parsing.
-                    return null;
-                }
-                //The temperature
-                return buffer.toString();
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
-            } catch (ProtocolException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
+            }catch (XmlPullParserException e) {
+                e.printStackTrace();
             }
-
             return null;
         }
 

@@ -2,9 +2,13 @@
 
 ![Weather application](display/weather_app_assign.png)
 
-##Assignment001
+#Assignment001
 
 ![Weather application - Design](display/assignment001.gif)
+
+#Assignment002
+
+![Weather application - Design](display/assignment002.gif)
 
 For our first Android application, let us design a Weather application. We will first complete the application, then discuss the details later. We will learn by doing.
 If we need to specify what we will be doing, here is the list:
